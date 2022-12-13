@@ -25,7 +25,7 @@ badges:
 
 #  description of this project
 description: |-
-  Terraform module to create NAT-gateway resource on AZURE.
+  Terraform module to create mssql-db resource on AZURE.
 
 # extra content
 include:
