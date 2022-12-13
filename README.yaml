@@ -6,7 +6,7 @@
 
 
 # Name of this project
-name: Terraform AZURE mssql-db
+name: Terraform AZURE MSSQL-DB
 
 # License of this project
 license: "APACHE"
