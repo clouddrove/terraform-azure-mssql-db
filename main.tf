@@ -84,7 +84,7 @@ resource "random_password" "main" {
 }
 
 resource "azurerm_sql_server" "primary" {
-  name                         = format("%s-%s",module.labels.id, var.sqlserver_name, )
+  name                         = format("%s-%s", module.labels.id, var.sqlserver_name, )
   resource_group_name          = local.resource_group_name
   location                     = local.location
   version                      = var.sql_server_version
@@ -150,16 +150,16 @@ resource "azurerm_sql_database" "db" {
   server_name                      = azurerm_sql_server.primary.name
   edition                          = var.sql_database_edition
   requested_service_objective_name = var.sqldb_service_objective_name
-#  tags                             = merge({ "Name" = format("%s-primary", var.database_name) }, var.tags, )
+  #  tags                             = merge({ "Name" = format("%s-primary", var.database_name) }, var.tags, )
 
   dynamic "threat_detection_policy" {
     for_each = local.if_threat_detection_policy_enabled
     content {
-      state                      = "Enabled"
-#      storage_endpoint           = azurerm_storage_account.storeacc.0.primary_blob_endpoint
-#      storage_account_access_key = azurerm_storage_account.storeacc.0.primary_access_key
-      retention_days             = var.log_retention_days
-      email_addresses            = var.email_addresses_for_alerts
+      state = "Enabled"
+      #      storage_endpoint           = azurerm_storage_account.storeacc.0.primary_blob_endpoint
+      #      storage_account_access_key = azurerm_storage_account.storeacc.0.primary_access_key
+      retention_days  = var.log_retention_days
+      email_addresses = var.email_addresses_for_alerts
     }
   }
 }
@@ -286,7 +286,7 @@ resource "azurerm_sql_firewall_rule" "fw02" {
 }
 
 #---------------------------------------------------------
-# Azure SQL Failover Group - Default is "false" 
+# Azure SQL Failover Group - Default is "false"
 #---------------------------------------------------------
 
 resource "azurerm_sql_failover_group" "fog" {
@@ -312,7 +312,7 @@ resource "azurerm_sql_failover_group" "fog" {
 }
 
 #---------------------------------------------------------
-# Private Link for SQL Server - Default is "false" 
+# Private Link for SQL Server - Default is "false"
 #---------------------------------------------------------
 data "azurerm_virtual_network" "vnet01" {
   count               = var.enable_private_endpoint && var.existing_vnet_id == null ? 1 : 0
@@ -320,21 +320,13 @@ data "azurerm_virtual_network" "vnet01" {
   resource_group_name = local.resource_group_name
 }
 
-resource "azurerm_subnet" "snet-ep" {
-  count                                          = var.enable_private_endpoint && var.existing_subnet_id == null ? 1 : 0
-  name                                           = "subnet-endpoint-${local.location}"
-  resource_group_name                            = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet01.0.resource_group_name : element(split("/", var.existing_vnet_id), 4)
-  virtual_network_name                           = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet01.0.name : element(split("/", var.existing_vnet_id), 8)
-  address_prefixes                               = var.private_subnet_address_prefix
-  enforce_private_link_endpoint_network_policies = true
-}
 
 resource "azurerm_private_endpoint" "pep1" {
   count               = var.enable_private_endpoint ? 1 : 0
   name                = "sqldb-private-endpoint"
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = var.existing_subnet_id == null ? azurerm_subnet.snet-ep.0.id : var.existing_subnet_id
+  subnet_id           = var.existing_subnet_id
   tags                = merge({ "Name" = format("%s", "sqldb-private-endpoint") }, var.tags, )
 
   private_service_connection {
@@ -350,7 +342,7 @@ resource "azurerm_private_endpoint" "pep2" {
   name                = format("%s-secondary", "sqldb-private-endpoint")
   location            = local.location
   resource_group_name = local.resource_group_name
-  subnet_id           = var.existing_subnet_id == null ? azurerm_subnet.snet-ep.0.id : var.existing_subnet_id
+  subnet_id           = var.existing_subnet_id
   tags                = merge({ "Name" = format("%s", "sqldb-private-endpoint") }, var.tags, )
 
   private_service_connection {
@@ -362,7 +354,7 @@ resource "azurerm_private_endpoint" "pep2" {
 }
 
 #------------------------------------------------------------------
-# DNS zone & records for SQL Private endpoints - Default is "false" 
+# DNS zone & records for SQL Private endpoints - Default is "false"
 #------------------------------------------------------------------
 
 data "azurerm_private_endpoint_connection" "private-ip1" {
@@ -416,7 +408,7 @@ resource "azurerm_private_dns_a_record" "arecord2" {
 }
 
 #------------------------------------------------------------------
-# azurerm monitoring diagnostics  - Default is "false" 
+# azurerm monitoring diagnostics  - Default is "false"
 #------------------------------------------------------------------
 resource "azurerm_monitor_diagnostic_setting" "extaudit" {
   count                      = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? 1 : 0

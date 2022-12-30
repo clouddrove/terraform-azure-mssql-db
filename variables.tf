@@ -25,13 +25,13 @@ variable "random_password_length" {
 }
 
 variable "enable_sql_server_extended_auditing_policy" {
-  type = bool
+  type        = bool
   description = "Manages Extended Audit policy for SQL servers"
   default     = false
 }
 
 variable "enable_database_extended_auditing_policy" {
-  type = bool
+  type        = bool
   description = "Manages Extended Audit policy for SQL database"
   default     = false
 }
@@ -82,7 +82,7 @@ variable "threat_detection_audit_logs_retention_days" {
 }
 
 variable "enable_vulnerability_assessment" {
-  type = bool
+  type        = bool
   description = "Manages the Vulnerability Assessment for a MS SQL Server"
   default     = false
 }
@@ -130,7 +130,7 @@ variable "enable_private_endpoint" {
 }
 
 variable "virtual_network_name" {
-  type = string
+  type        = string
   description = "The name of the virtual network"
   default     = ""
 }
@@ -166,7 +166,7 @@ variable "firewall_rules" {
 }
 
 variable "enable_log_monitoring" {
-  type = bool
+  type        = bool
   description = "Enable audit events to Azure Monitor?"
   default     = false
 }
@@ -233,6 +233,6 @@ variable "environment" {
 }
 
 variable "sql_server_version" {
-  type = string
+  type    = string
   default = null
 }
