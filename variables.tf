@@ -7,25 +7,25 @@ variable "create_resource_group" {
 variable "resource_group_name" {
   description = "A container that holds related resources for an Azure solution"
   default     = ""
-  type = string
+  type        = string
 }
 
 variable "storage_account_name" {
   description = "The name of the storage account name"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "location" {
   description = "The location/region to keep all your network resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table'"
   default     = ""
-  type = string
+  type        = string
 }
 
 variable "random_password_length" {
   description = "The desired length of random password created by this module"
   default     = 32
-  type = number
+  type        = number
 }
 
 variable "enable_sql_server_extended_auditing_policy" {
@@ -43,55 +43,55 @@ variable "enable_database_extended_auditing_policy" {
 variable "enable_threat_detection_policy" {
   description = ""
   default     = false
-  type = bool
+  type        = bool
 }
 
 variable "sqlserver_name" {
   description = "SQL server Name"
   default     = ""
-  type = string
+  type        = string
 }
 
 variable "admin_username" {
   description = "The administrator login name for the new SQL Server"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "admin_password" {
   description = "The password associated with the admin_username user"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "database_name" {
   description = "The name of the database"
   default     = ""
-  type = string
+  type        = string
 }
 
 variable "sql_database_edition" {
   description = "The edition of the database to be created"
   default     = "Standard"
-  type = string
+  type        = string
 }
 
 variable "sqldb_service_objective_name" {
   description = " The service objective name for the database"
   default     = "S1"
-  type = string
+  type        = string
 }
 
 variable "log_retention_days" {
   description = "Specifies the number of days to keep in the Threat Detection audit logs"
   default     = "30"
-  type = string
+  type        = string
 }
 
 variable "threat_detection_audit_logs_retention_days" {
   description = "Specifies the number of days to keep in the Threat Detection audit logs."
   default     = 0
-  type = number
+  type        = number
 }
 
 variable "enable_vulnerability_assessment" {
@@ -115,37 +115,37 @@ variable "disabled_alerts" {
 variable "ad_admin_login_name" {
   description = "The login name of the principal to set as the server administrator"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "identity" {
   description = "If you want your SQL Server to have an managed identity. Defaults to false."
   default     = false
-  type = bool
+  type        = bool
 }
 
 variable "enable_firewall_rules" {
   description = "Manage an Azure SQL Firewall Rule"
   default     = false
-  type = bool
+  type        = bool
 }
 
 variable "enable_failover_group" {
   description = "Create a failover group of databases on a collection of Azure SQL servers"
   default     = false
-  type = bool
+  type        = bool
 }
 
 variable "secondary_sql_server_location" {
   description = "Specifies the supported Azure location to create secondary sql server resource"
   default     = "northeurope"
-  type = string
+  type        = string
 }
 
 variable "enable_private_endpoint" {
   description = "Manages a Private Endpoint to SQL database"
   default     = false
-  type = bool
+  type        = bool
 }
 
 variable "virtual_network_name" {
@@ -157,25 +157,25 @@ variable "virtual_network_name" {
 variable "private_subnet_address_prefix" {
   description = "The name of the subnet for private endpoints"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "existing_vnet_id" {
   description = "The resoruce id of existing Virtual network"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "existing_subnet_id" {
   description = "The resource id of existing subnet"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "existing_private_dns_zone" {
   description = "Name of the existing private DNS zone"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "firewall_rules" {
@@ -197,11 +197,11 @@ variable "enable_log_monitoring" {
 variable "initialize_sql_script_execution" {
   description = "Allow/deny to Create and initialize a Microsoft SQL Server database"
   default     = false
-  type = bool
+  type        = bool
 }
 
 variable "sqldb_init_script_file" {
-  type = string
+  type        = string
   description = "SQL Script file name to create and initialize the database"
   default     = ""
 }
@@ -209,13 +209,13 @@ variable "sqldb_init_script_file" {
 variable "log_analytics_workspace_id" {
   description = "Specifies the ID of a Log Analytics Workspace where Diagnostics Data to be sent"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "storage_account_id" {
   description = "The name of the storage account to store the all monitoring logs"
   default     = null
-  type = string
+  type        = string
 }
 
 variable "extaudit_diag_logs" {
@@ -256,13 +256,13 @@ variable "name" {
 
 variable "environment" {
   type        = string
-  default = ""
+  default     = ""
   description = "Project environment"
 
 }
 
 variable "sql_server_version" {
-  type    = string
-  default = null
+  type        = string
+  default     = null
   description = "The version for the new server. Valid values are: 2.0 (for v11 server) and 12.0 (for v12 server)"
 }
