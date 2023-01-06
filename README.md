@@ -100,9 +100,9 @@ module "mssql-server" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| ad\_admin\_login\_name | The login name of the principal to set as the server administrator | `any` | `null` | no |
-| admin\_password | The password associated with the admin\_username user | `any` | `null` | no |
-| admin\_username | The administrator login name for the new SQL Server | `any` | `null` | no |
+| ad\_admin\_login\_name | The login name of the principal to set as the server administrator | `string` | `null` | no |
+| admin\_password | The password associated with the admin\_username user | `string` | `null` | no |
+| admin\_username | The administrator login name for the new SQL Server | `string` | `null` | no |
 | create\_resource\_group | Whether to create resource group and use it for all networking resources | `bool` | `true` | no |
 | database\_name | The name of the database | `string` | `""` | no |
 | disabled\_alerts | Specifies an array of alerts that are disabled. Allowed values are: Sql\_Injection, Sql\_Injection\_Vulnerability, Access\_Anomaly, Data\_Exfiltration, Unsafe\_Action. | `list(any)` | `[]` | no |
@@ -115,32 +115,32 @@ module "mssql-server" {
 | enable\_sql\_server\_extended\_auditing\_policy | Manages Extended Audit policy for SQL servers | `bool` | `false` | no |
 | enable\_threat\_detection\_policy | n/a | `bool` | `false` | no |
 | enable\_vulnerability\_assessment | Manages the Vulnerability Assessment for a MS SQL Server | `bool` | `false` | no |
-| environment | Project environment | `string` | n/a | yes |
-| existing\_private\_dns\_zone | Name of the existing private DNS zone | `any` | `null` | no |
-| existing\_subnet\_id | The resource id of existing subnet | `any` | `null` | no |
-| existing\_vnet\_id | The resoruce id of existing Virtual network | `any` | `null` | no |
+| environment | Project environment | `string` | `""` | no |
+| existing\_private\_dns\_zone | Name of the existing private DNS zone | `string` | `null` | no |
+| existing\_subnet\_id | The resource id of existing subnet | `string` | `null` | no |
+| existing\_vnet\_id | The resoruce id of existing Virtual network | `string` | `null` | no |
 | extaudit\_diag\_logs | Database Monitoring Category details for Azure Diagnostic setting | `list` | <pre>[<br>  "SQLSecurityAuditEvents",<br>  "SQLInsights",<br>  "AutomaticTuning",<br>  "QueryStoreRuntimeStatistics",<br>  "QueryStoreWaitStatistics",<br>  "Errors",<br>  "DatabaseWaitStatistics",<br>  "Timeouts",<br>  "Blocks",<br>  "Deadlocks"<br>]</pre> | no |
 | firewall\_rules | Range of IP addresses to allow firewall connections. | <pre>list(object({<br>    name             = string<br>    start_ip_address = string<br>    end_ip_address   = string<br>  }))</pre> | `[]` | no |
 | identity | If you want your SQL Server to have an managed identity. Defaults to false. | `bool` | `false` | no |
 | initialize\_sql\_script\_execution | Allow/deny to Create and initialize a Microsoft SQL Server database | `bool` | `false` | no |
 | label\_order | Label order, e.g. sequence of application name and environment `name`,`environment`,'attribute' [`webserver`,`qa`,`devops`,`public`,] . | `list(any)` | `[]` | no |
 | location | The location/region to keep all your network resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table' | `string` | `""` | no |
-| log\_analytics\_workspace\_id | Specifies the ID of a Log Analytics Workspace where Diagnostics Data to be sent | `any` | `null` | no |
+| log\_analytics\_workspace\_id | Specifies the ID of a Log Analytics Workspace where Diagnostics Data to be sent | `string` | `null` | no |
 | log\_retention\_days | Specifies the number of days to keep in the Threat Detection audit logs | `string` | `"30"` | no |
 | managedby | ManagedBy, eg ''. | `string` | `""` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
-| private\_subnet\_address\_prefix | The name of the subnet for private endpoints | `any` | `null` | no |
+| private\_subnet\_address\_prefix | The name of the subnet for private endpoints | `string` | `null` | no |
 | random\_password\_length | The desired length of random password created by this module | `number` | `32` | no |
 | repository | Terraform current module repo | `string` | `""` | no |
 | resource\_group\_name | A container that holds related resources for an Azure solution | `string` | `""` | no |
 | secondary\_sql\_server\_location | Specifies the supported Azure location to create secondary sql server resource | `string` | `"northeurope"` | no |
 | sql\_database\_edition | The edition of the database to be created | `string` | `"Standard"` | no |
-| sql\_server\_version | n/a | `string` | `null` | no |
+| sql\_server\_version | The version for the new server. Valid values are: 2.0 (for v11 server) and 12.0 (for v12 server) | `string` | `null` | no |
 | sqldb\_init\_script\_file | SQL Script file name to create and initialize the database | `string` | `""` | no |
 | sqldb\_service\_objective\_name | The service objective name for the database | `string` | `"S1"` | no |
 | sqlserver\_name | SQL server Name | `string` | `""` | no |
-| storage\_account\_id | The name of the storage account to store the all monitoring logs | `any` | `null` | no |
-| storage\_account\_name | The name of the storage account name | `any` | `null` | no |
+| storage\_account\_id | The name of the storage account to store the all monitoring logs | `string` | `null` | no |
+| storage\_account\_name | The name of the storage account name | `string` | `null` | no |
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
 | threat\_detection\_audit\_logs\_retention\_days | Specifies the number of days to keep in the Threat Detection audit logs. | `number` | `0` | no |
 | virtual\_network\_name | The name of the virtual network | `string` | `""` | no |
