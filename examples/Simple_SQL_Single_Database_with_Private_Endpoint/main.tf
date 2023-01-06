@@ -6,33 +6,41 @@ module "resource_group" {
   source  = "clouddrove/resource-group/azure"
   version = "1.0.1"
 
-  name        = "app"
+  name        = "appm"
   environment = "example"
   label_order = ["name", "environment"]
   location    = "Canada Central"
 }
 
-#Vnet
 module "vnet" {
-  source  = "clouddrove/virtual-network/azure"
-  version = "1.0.3"
-
-  name        = "app"
-  environment = "example"
-  label_order = ["name", "environment"]
-
+  source              = "clouddrove/vnet/azure"
+  version             = "1.0.0"
+  name                = "app"
+  environment         = "test"
+  label_order         = ["name", "environment"]
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
   address_space       = "10.0.0.0/16"
   enable_ddos_pp      = false
+}
+
+module "subnet" {
+  source               = "clouddrove/subnet/azure"
+  version              = "1.0.0"
+  name                 = "app"
+  environment          = "test"
+  label_order          = ["name", "environment"]
+  resource_group_name  = module.resource_group.resource_group_name
+  location             = module.resource_group.resource_group_location
+  virtual_network_name = join("", module.vnet.vnet_name)
 
   #subnet
-  subnet_names                  = ["subnet1", "subnet2"]
-  subnet_prefixes               = ["10.0.1.0/24", "10.0.2.0/24"]
-  disable_bgp_route_propagation = false
+  default_name_subnet = true
+  subnet_names        = ["subnet1"]
+  subnet_prefixes     = ["10.0.1.0/24"]
 
-  # routes
-  enabled_route_table = false
+  # route_table
+  enable_route_table = false
   routes = [
     {
       name           = "rt-test"
@@ -45,23 +53,22 @@ module "vnet" {
 
 module "mssql-server" {
   depends_on = [module.resource_group, module.vnet]
-  source  = "./../.."
+  source     = "./../.."
 
-  name        = "app"
-  environment = "example"
-  label_order = ["environment", "name"]
+  name                  = "app"
+  environment           = "example"
+  label_order           = ["environment", "name"]
   create_resource_group = false
   resource_group_name   = module.resource_group.resource_group_name
   location              = module.resource_group.resource_group_location
 
-  sqlserver_name               = "mssqldbserver"
-  database_name                = "demomssqldb"
-  sql_database_edition         = "Standard"
-  sqldb_service_objective_name = "S1"
-  sql_server_version           = "12.0"
+  sqlserver_name                 = "mssqldbserver"
+  database_name                  = "demomssqldb"
+  sql_database_edition           = "Standard"
+  sqldb_service_objective_name   = "S1"
+  sql_server_version             = "12.0"
   enable_threat_detection_policy = true
-  enable_private_endpoint       = true
-  virtual_network_name          = module.vnet.vnet_name[0]
-  private_subnet_address_prefix = ["10.0.3.0/24"]
-
+  enable_private_endpoint        = true
+  virtual_network_name           = module.vnet.vnet_name[0]
+  existing_subnet_id             = module.subnet.default_subnet_id[0]
 }
