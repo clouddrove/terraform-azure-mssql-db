@@ -266,3 +266,21 @@ variable "sql_server_version" {
   default     = null
   description = "The version for the new server. Valid values are: 2.0 (for v11 server) and 12.0 (for v12 server)"
 }
+
+variable "create_storage_account" {
+  type        = bool
+  description = "Make it true to create storage account for the audit policies."
+  default     = false
+}
+
+variable "storage_account_blob_endpoint" {
+  type        = string
+  default     = null
+  description = "The endpoint URL for blob storage in the primary location."
+}
+
+variable "storage_account_access_key" {
+  type        = string
+  default     = null
+  description = "The primary access key for the storage account."
+}
