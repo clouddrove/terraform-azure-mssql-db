@@ -38,7 +38,7 @@ data "azurerm_client_config" "current" {}
 #----------------------------------------------------------
 
 resource "random_string" "str" {
-  count   = var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment ? 1 : 0
+  count   = (var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment) && var.create_storage_account == true ? 1 : 0
   length  = 6
   special = false
   upper   = false
@@ -48,7 +48,7 @@ resource "random_string" "str" {
 }
 
 resource "azurerm_storage_account" "storeacc" {
-  count                     = var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment || var.enable_log_monitoring == true ? 1 : 0
+  count                     = (var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment || var.enable_log_monitoring == true) && var.create_storage_account == true ? 1 : 0
   name                      = var.storage_account_name == null ? "stsqlauditlogs${element(concat(random_string.str.*.result, [""]), 0)}" : substr(var.storage_account_name, 0, 24)
   resource_group_name       = local.resource_group_name
   location                  = local.location
@@ -103,8 +103,8 @@ resource "azurerm_sql_server" "primary" {
 resource "azurerm_mssql_server_extended_auditing_policy" "primary" {
   count                                   = var.enable_sql_server_extended_auditing_policy ? 1 : 0
   server_id                               = azurerm_sql_server.primary.id
-  storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
-  storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
+  storage_endpoint                        = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_blob_endpoint : var.storage_account_blob_endpoint
+  storage_account_access_key              = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_access_key : var.storage_account_access_key
   storage_account_access_key_is_secondary = false
   retention_in_days                       = var.log_retention_days
   log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : false
