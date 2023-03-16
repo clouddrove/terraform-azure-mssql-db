@@ -104,6 +104,7 @@ module "mssql-server" {
 | admin\_password | The password associated with the admin\_username user | `string` | `null` | no |
 | admin\_username | The administrator login name for the new SQL Server | `string` | `null` | no |
 | create\_resource\_group | Whether to create resource group and use it for all networking resources | `bool` | `true` | no |
+| create\_storage\_account | Make it true to create storage account for the audit policies. | `bool` | `false` | no |
 | database\_name | The name of the database | `string` | `""` | no |
 | disabled\_alerts | Specifies an array of alerts that are disabled. Allowed values are: Sql\_Injection, Sql\_Injection\_Vulnerability, Access\_Anomaly, Data\_Exfiltration, Unsafe\_Action. | `list(any)` | `[]` | no |
 | email\_addresses\_for\_alerts | A list of email addresses which alerts should be sent to. | `list(any)` | `[]` | no |
@@ -139,6 +140,8 @@ module "mssql-server" {
 | sqldb\_init\_script\_file | SQL Script file name to create and initialize the database | `string` | `""` | no |
 | sqldb\_service\_objective\_name | The service objective name for the database | `string` | `"S1"` | no |
 | sqlserver\_name | SQL server Name | `string` | `""` | no |
+| storage\_account\_access\_key | The primary access key for the storage account. | `string` | `null` | no |
+| storage\_account\_blob\_endpoint | The endpoint URL for blob storage in the primary location. | `string` | `null` | no |
 | storage\_account\_id | The name of the storage account to store the all monitoring logs | `string` | `null` | no |
 | storage\_account\_name | The name of the storage account name | `string` | `null` | no |
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
