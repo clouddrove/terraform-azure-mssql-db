@@ -144,12 +144,13 @@ resource "azurerm_mssql_server_extended_auditing_policy" "secondary" {
 #--------------------------------------------------------------------
 
 resource "azurerm_sql_database" "db" {
-  name                             = var.database_name
+  count                            = length(var.database_name)
+  name                             = var.database_name[count.index]
   resource_group_name              = local.resource_group_name
   location                         = local.location
   server_name                      = azurerm_sql_server.primary.name
-  edition                          = var.sql_database_edition
-  requested_service_objective_name = var.sqldb_service_objective_name
+  edition                          = var.sql_database_edition[count.index]
+  requested_service_objective_name = var.sqldb_service_objective_name[count.index]
   #  tags                             = merge({ "Name" = format("%s-primary", var.database_name) }, var.tags, )
 
   dynamic "threat_detection_policy" {
@@ -166,7 +167,7 @@ resource "azurerm_sql_database" "db" {
 
 resource "azurerm_mssql_database_extended_auditing_policy" "primary" {
   count                                   = var.enable_database_extended_auditing_policy ? 1 : 0
-  database_id                             = azurerm_sql_database.db.id
+  database_id                             = azurerm_sql_database.db[count.index].id
   storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
@@ -237,7 +238,7 @@ resource "azurerm_mssql_server_vulnerability_assessment" "va_secondary" {
 resource "null_resource" "create_sql" {
   count = var.initialize_sql_script_execution ? 1 : 0
   provisioner "local-exec" {
-    command = "sqlcmd -I -U ${azurerm_sql_server.primary.administrator_login} -P ${azurerm_sql_server.primary.administrator_login_password} -S ${azurerm_sql_server.primary.fully_qualified_domain_name} -d ${azurerm_sql_database.db.name} -i ${var.sqldb_init_script_file} -o ${format("%s.log", replace(var.sqldb_init_script_file, "/.sql/", ""))}"
+    command = "sqlcmd -I -U ${azurerm_sql_server.primary.administrator_login} -P ${azurerm_sql_server.primary.administrator_login_password} -S ${azurerm_sql_server.primary.fully_qualified_domain_name} -d ${azurerm_sql_database.db[count.index].name} -i ${var.sqldb_init_script_file} -o ${format("%s.log", replace(var.sqldb_init_script_file, "/.sql/", ""))}"
   }
 }
 
@@ -294,7 +295,7 @@ resource "azurerm_sql_failover_group" "fog" {
   name                = "sqldb-failover-group"
   resource_group_name = local.resource_group_name
   server_name         = azurerm_sql_server.primary.name
-  databases           = [azurerm_sql_database.db.id]
+  databases           = azurerm_sql_database.db[count.index].id
   tags                = merge({ "Name" = format("%s", "sqldb-failover-group") }, var.tags, )
 
   partner_servers {
@@ -413,7 +414,7 @@ resource "azurerm_private_dns_a_record" "arecord2" {
 resource "azurerm_monitor_diagnostic_setting" "extaudit" {
   count                      = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? 1 : 0
   name                       = lower("extaudit-${var.database_name}-diag")
-  target_resource_id         = azurerm_sql_database.db.id
+  target_resource_id         = azurerm_sql_database.db[count.index].id
   log_analytics_workspace_id = var.log_analytics_workspace_id
   storage_account_id         = var.storage_account_id != null ? var.storage_account_id : null
 

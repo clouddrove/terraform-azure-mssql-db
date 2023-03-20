@@ -63,9 +63,9 @@ module "mssql-server" {
   location              = module.resource_group.resource_group_location
 
   sqlserver_name                 = "mssqldbserver"
-  database_name                  = "demomssqldb"
-  sql_database_edition           = "Standard"
-  sqldb_service_objective_name   = "S1"
+  database_name                  = ["demomssqldb", "seconddemodb"]
+  sql_database_edition           = ["Standard", "Standard"]
+  sqldb_service_objective_name   = ["S1", "S1"]
   sql_server_version             = "12.0"
   enable_threat_detection_policy = true
   enable_private_endpoint        = true

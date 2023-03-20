@@ -66,20 +66,20 @@ variable "admin_password" {
 
 variable "database_name" {
   description = "The name of the database"
-  default     = ""
-  type        = string
+  default     = []
+  type        = list(string)
 }
 
 variable "sql_database_edition" {
   description = "The edition of the database to be created"
-  default     = "Standard"
-  type        = string
+  default     = ["Standard"]
+  type        = list(string)
 }
 
 variable "sqldb_service_objective_name" {
   description = " The service objective name for the database"
-  default     = "S1"
-  type        = string
+  default     = ["S1"]
+  type        = list(string)
 }
 
 variable "log_retention_days" {

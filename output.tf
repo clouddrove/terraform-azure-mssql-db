@@ -52,12 +52,12 @@ output "sql_server_admin_password" {
 
 output "sql_database_id" {
   description = "The SQL Database ID"
-  value       = azurerm_sql_database.db.id
+  value       = azurerm_sql_database.db.*.id
 }
 
 output "sql_database_name" {
   description = "The SQL Database Name"
-  value       = azurerm_sql_database.db.name
+  value       = azurerm_sql_database.db.*.name
 }
 
 output "sql_failover_group_id" {
