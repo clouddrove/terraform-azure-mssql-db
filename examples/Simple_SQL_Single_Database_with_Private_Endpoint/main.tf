@@ -4,7 +4,7 @@ provider "azurerm" {
 
 module "resource_group" {
   source  = "clouddrove/resource-group/azure"
-  version = "1.0.1"
+  version = "1.0.2"
 
   name        = "appm"
   environment = "example"
@@ -14,7 +14,7 @@ module "resource_group" {
 
 module "vnet" {
   source              = "clouddrove/vnet/azure"
-  version             = "1.0.0"
+  version             = "1.0.1"
   name                = "app"
   environment         = "test"
   label_order         = ["name", "environment"]
@@ -26,7 +26,7 @@ module "vnet" {
 
 module "subnet" {
   source               = "clouddrove/subnet/azure"
-  version              = "1.0.0"
+  version              = "1.0.2"
   name                 = "app"
   environment          = "test"
   label_order          = ["name", "environment"]
