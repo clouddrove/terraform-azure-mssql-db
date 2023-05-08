@@ -124,7 +124,7 @@ module "mssql-server" {
 | firewall\_rules | Range of IP addresses to allow firewall connections. | <pre>list(object({<br>    name             = string<br>    start_ip_address = string<br>    end_ip_address   = string<br>  }))</pre> | `[]` | no |
 | identity | If you want your SQL Server to have an managed identity. Defaults to false. | `bool` | `false` | no |
 | initialize\_sql\_script\_execution | Allow/deny to Create and initialize a Microsoft SQL Server database | `bool` | `false` | no |
-| label\_order | Label order, e.g. sequence of application name and environment `name`,`environment`,'attribute' [`webserver`,`qa`,`devops`,`public`,] . | `list(any)` | `[]` | no |
+| label\_order | Label order, e.g. sequence of application name and environment `name`,`environment`,'attribute' [`webserver`,`qa`,`devops`,`public`,] . | `list(any)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 | location | The location/region to keep all your network resources. To get the list of all locations with table format from azure cli, run 'az account list-locations -o table' | `string` | `""` | no |
 | log\_analytics\_workspace\_id | Specifies the ID of a Log Analytics Workspace where Diagnostics Data to be sent | `string` | `null` | no |
 | log\_retention\_days | Specifies the number of days to keep in the Threat Detection audit logs | `string` | `"30"` | no |
