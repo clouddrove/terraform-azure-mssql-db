@@ -284,3 +284,15 @@ variable "storage_account_access_key" {
   default     = null
   description = "The primary access key for the storage account."
 }
+variable "minimum_tls_version" {
+  type        = string
+  default     = "1.2"
+  description = "The Minimum TLS Version for all SQL Database and SQL Data Warehouse databases associated with the server. Valid values are: 1.0, 1.1 , 1.2 and Disabled. Defaults to 1.2."
+}
+
+variable "enable_extended_auditing_policy" {
+  type        = bool
+  default     = true
+  description = "Whether to enable the extended auditing policy. Possible values are true and false. Defaults to true."
+}
+
