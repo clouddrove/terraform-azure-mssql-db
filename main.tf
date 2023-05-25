@@ -82,7 +82,9 @@ resource "random_password" "main" {
     administrator_login_password = var.sqlserver_name
   }
 }
-
+#tfsec:ignore:azure-database-no-public-access  ### No argument-reference found on terraform registry
+#tfsec:ignore:azure-database-secure-tls-policy ### No argument-reference found on terraform registry
+#tfsec:ignore:azure-database-enable-audit      ### No argument-reference found on terraform registry
 resource "azurerm_sql_server" "primary" {
   name                         = format("%s-%s", module.labels.id, var.sqlserver_name, )
   resource_group_name          = local.resource_group_name
