@@ -109,6 +109,8 @@ module "mssql-server" {
 | disabled\_alerts | Specifies an array of alerts that are disabled. Allowed values are: Sql\_Injection, Sql\_Injection\_Vulnerability, Access\_Anomaly, Data\_Exfiltration, Unsafe\_Action. | `list(any)` | `[]` | no |
 | email\_addresses\_for\_alerts | A list of email addresses which alerts should be sent to. | `list(any)` | `[]` | no |
 | enable\_database\_extended\_auditing\_policy | Manages Extended Audit policy for SQL database | `bool` | `false` | no |
+| enable\_databases\_extended\_auditing\_policy | Whether to enable the extended auditing policy. Possible values are true and false. Defaults to true. | `bool` | `true` | no |
+| enable\_extended\_auditing\_policy | Whether to enable the extended auditing policy. Possible values are true and false. Defaults to true. | `bool` | `true` | no |
 | enable\_failover\_group | Create a failover group of databases on a collection of Azure SQL servers | `bool` | `false` | no |
 | enable\_firewall\_rules | Manage an Azure SQL Firewall Rule | `bool` | `false` | no |
 | enable\_log\_monitoring | Enable audit events to Azure Monitor? | `bool` | `false` | no |
@@ -129,6 +131,7 @@ module "mssql-server" {
 | log\_analytics\_workspace\_id | Specifies the ID of a Log Analytics Workspace where Diagnostics Data to be sent | `string` | `null` | no |
 | log\_retention\_days | Specifies the number of days to keep in the Threat Detection audit logs | `string` | `"30"` | no |
 | managedby | ManagedBy, eg ''. | `string` | `""` | no |
+| minimum\_tls\_version | The Minimum TLS Version for all SQL Database and SQL Data Warehouse databases associated with the server. Valid values are: 1.0, 1.1 , 1.2 and Disabled. Defaults to 1.2. | `string` | `"1.2"` | no |
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
 | private\_subnet\_address\_prefix | The name of the subnet for private endpoints | `string` | `null` | no |
 | random\_password\_length | The desired length of random password created by this module | `number` | `32` | no |
