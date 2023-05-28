@@ -82,7 +82,9 @@ resource "random_password" "main" {
     administrator_login_password = var.sqlserver_name
   }
 }
-
+#tfsec:ignore:azure-database-no-public-access  ### No argument-reference found on terraform registry
+#tfsec:ignore:azure-database-secure-tls-policy ### No argument-reference found on terraform registry
+#tfsec:ignore:azure-database-enable-audit      ### No argument-reference found on terraform registry
 resource "azurerm_sql_server" "primary" {
   name                         = format("%s-%s", module.labels.id, var.sqlserver_name, )
   resource_group_name          = local.resource_group_name
@@ -90,6 +92,7 @@ resource "azurerm_sql_server" "primary" {
   version                      = var.sql_server_version
   administrator_login          = var.admin_username == null ? "sqladmin" : var.admin_username
   administrator_login_password = var.admin_password == null ? random_password.main.result : var.admin_password
+  minimum_tls_version          = var.minimum_tls_version
   tags                         = merge({ "Name" = format("%s-primary", var.sqlserver_name) }, var.tags, )
 
   dynamic "identity" {
@@ -106,6 +109,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "primary" {
   storage_endpoint                        = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_blob_endpoint : var.storage_account_blob_endpoint
   storage_account_access_key              = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_access_key : var.storage_account_access_key
   storage_account_access_key_is_secondary = false
+  enabled                                 = var.enable_extended_auditing_policy
   retention_in_days                       = var.log_retention_days
   log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : false
 }
@@ -118,6 +122,7 @@ resource "azurerm_sql_server" "secondary" {
   version                      = "12.0"
   administrator_login          = var.admin_username == null ? "sqladmin" : var.admin_username
   administrator_login_password = var.admin_password == null ? random_password.main.result : var.admin_password
+  minimum_tls_version          = var.minimum_tls_version
   tags                         = merge({ "Name" = format("%s-secondary", var.sqlserver_name) }, var.tags, )
 
   dynamic "identity" {
@@ -134,6 +139,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "secondary" {
   storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
+  enabled                                 = var.enable_extended_auditing_policy
   retention_in_days                       = var.log_retention_days
   log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : null
 }
@@ -170,6 +176,7 @@ resource "azurerm_mssql_database_extended_auditing_policy" "primary" {
   storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
   storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
   storage_account_access_key_is_secondary = false
+  enabled                                 = var.enable_databases_extended_auditing_policy
   retention_in_days                       = var.log_retention_days
   log_monitoring_enabled                  = var.enable_log_monitoring == true && var.log_analytics_workspace_id != null ? true : null
 }
