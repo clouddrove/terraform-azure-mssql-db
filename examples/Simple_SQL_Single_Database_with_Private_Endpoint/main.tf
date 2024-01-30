@@ -14,22 +14,22 @@ module "resource_group" {
 
 module "vnet" {
   source              = "clouddrove/vnet/azure"
-  version             = "1.0.3"
+  version             = "1.0.4"
   name                = "app"
   environment         = "test"
   resource_group_name = module.resource_group.resource_group_name
   location            = module.resource_group.resource_group_location
-  address_space       = "10.0.0.0/16"
+  address_spaces      = ["10.0.0.0/16"]
 }
 
 module "subnet" {
   source               = "clouddrove/subnet/azure"
-  version              = "1.0.2"
+  version              = "1.1.0"
   name                 = "app"
   environment          = "test"
   resource_group_name  = module.resource_group.resource_group_name
   location             = module.resource_group.resource_group_location
-  virtual_network_name = join("", module.vnet.vnet_name)
+  virtual_network_name = module.vnet.vnet_name
 
   #subnet
   subnet_names    = ["subnet1"]
@@ -64,6 +64,6 @@ module "mssql-server" {
   sql_server_version             = "12.0"
   enable_threat_detection_policy = true
   enable_private_endpoint        = true
-  virtual_network_name           = module.vnet.vnet_name[0]
+  virtual_network_name           = module.vnet.vnet_name
   existing_subnet_id             = module.subnet.default_subnet_id[0]
 }
