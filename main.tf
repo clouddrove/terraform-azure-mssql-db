@@ -9,8 +9,14 @@ module "labels" {
 }
 
 locals {
-  resource_group_name                 = element(coalescelist(data.azurerm_resource_group.rgrp.*.name, azurerm_resource_group.rg.*.name, [""]), 0)
-  location                            = element(coalescelist(data.azurerm_resource_group.rgrp.*.location, azurerm_resource_group.rg.*.location, [""]), 0)
+  resource_group_name = length(data.azurerm_resource_group.rgrp) > 0 ? data.azurerm_resource_group.rgrp[0].name : (
+    length(azurerm_resource_group.rg) > 0 ? azurerm_resource_group.rg[0].name : null
+  )
+
+  location = length(data.azurerm_resource_group.rgrp) > 0 ? data.azurerm_resource_group.rgrp[0].location : (
+    length(azurerm_resource_group.rg) > 0 ? azurerm_resource_group.rg[0].location : null
+  )
+
   if_threat_detection_policy_enabled  = var.enable_threat_detection_policy ? [{}] : []
   if_extended_auditing_policy_enabled = var.enable_extended_auditing_policy ? [{}] : []
 }
@@ -48,8 +54,9 @@ resource "random_string" "str" {
 }
 
 resource "azurerm_storage_account" "storeacc" {
-  count                    = (var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment || var.enable_log_monitoring == true) && var.create_storage_account == true ? 1 : 0
-  name                     = var.storage_account_name == null ? "stsqlauditlogs${element(concat(random_string.str.*.result, [""]), 0)}" : substr(var.storage_account_name, 0, 24)
+  count = (var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment || var.enable_log_monitoring == true) && var.create_storage_account == true ? 1 : 0
+  name  = var.storage_account_name == null ? format("stsqlauditlogs%s", element(concat(random_string.str.*.result, [""]), 0)) : substr(var.storage_account_name, 0, 24)
+
   resource_group_name      = local.resource_group_name
   location                 = local.location
   account_kind             = "StorageV2"
@@ -62,7 +69,7 @@ resource "azurerm_storage_account" "storeacc" {
 resource "azurerm_storage_container" "storcont" {
   count                 = var.enable_vulnerability_assessment ? 1 : 0
   name                  = "vulnerability-assessment"
-  storage_account_name  = azurerm_storage_account.storeacc.0.name
+  storage_account_name  = azurerm_storage_account.storeacc[0].name
   container_access_type = "private"
 }
 
@@ -116,7 +123,7 @@ resource "azurerm_mssql_server" "primary" {
 resource "azurerm_mssql_server_extended_auditing_policy" "primary" {
   count                                   = var.enable_sql_server_extended_auditing_policy ? 1 : 0
   server_id                               = azurerm_mssql_server.primary.id
-  storage_endpoint                        = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_blob_endpoint : var.storage_account_blob_endpoint
+  storage_endpoint                        = var.create_storage_account == true ? azurerm_storage_account.storeacc[0].primary_blob_endpoint : var.storage_account_blob_endpoint
   storage_account_access_key              = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_access_key : var.storage_account_access_key
   storage_account_access_key_is_secondary = false
   enabled                                 = var.enable_extended_auditing_policy
