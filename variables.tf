@@ -301,3 +301,69 @@ variable "enable_databases_extended_auditing_policy" {
   description = "Whether to enable the extended auditing policy. Possible values are true and false. Defaults to true."
 }
 
+variable "enabled" {
+  type        = bool
+  description = "Set to false to prevent the module from creating any resources."
+  default     = true
+}
+
+variable "log_analytics_destination_type" {
+  type        = string
+  default     = "AzureDiagnostics"
+  description = "Possible values are AzureDiagnostics and Dedicated, default to AzureDiagnostics. When set to Dedicated, logs sent to a Log Analytics workspace will go into resource specific tables, instead of the legacy AzureDiagnostics table."
+}
+
+variable "enable_diagnostic" {
+  type        = bool
+  default     = false
+  description = "Set to false to prevent the module from creating any resources."
+}
+
+variable "eventhub_name" {
+  type        = string
+  default     = null
+  description = "Eventhub Name to pass it to destination details of diagnosys setting of NSG."
+}
+
+variable "eventhub_authorization_rule_id" {
+  type        = string
+  default     = null
+  description = "Eventhub authorization rule id to pass it to destination details of diagnosys setting of NSG."
+}
+
+variable "metric_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether metric diagnonsis should be enable in diagnostic settings for flexible Mysql."
+}
+
+variable "log_category" {
+  type        = list(string)
+  default     = ["SQLSecurityAuditEvents", "SQLInsights"]
+  description = "Categories of logs to be recorded in diagnostic setting for MSSQL database. Acceptable values are SQLSecurityAuditEvents, SQLInsights, AutomaticTuning, or QueryStoreRuntimeStatistics."
+}
+
+variable "collation" {
+  type    = string
+  default = "SQL_Latin1_General_CP1_CI_AS"
+}
+
+variable "license_type" {
+  type    = string
+  default = "LicenseIncluded"
+}
+
+variable "max_size_gb" {
+  type    = number
+  default = 2
+}
+
+variable "sku_name" {
+  type    = string
+  default = "Basic"
+}
+
+variable "enclave_type" {
+  type    = string
+  default = "VBS"
+}
