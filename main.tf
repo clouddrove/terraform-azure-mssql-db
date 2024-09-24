@@ -55,7 +55,8 @@ resource "random_string" "str" {
 
 resource "azurerm_storage_account" "storeacc" {
   count = (var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment || var.enable_log_monitoring == true) && var.create_storage_account == true ? 1 : 0
-  name  = var.storage_account_name == null ? format("stsqlauditlogs%s", element(concat(random_string.str.*.result, [""]), 0)) : substr(var.storage_account_name, 0, 24)
+  # name  = var.storage_account_name == null ? format("stsqlauditlogs%s", element(concat(random_string.str.*.result, [""]), 0)) : substr(var.storage_account_name, 0, 24)
+  name = var.storage_account_name == null ? "stsqlauditlogs${random_string.str[0].result}" : substr(var.storage_account_name, 0, 24)
 
   resource_group_name      = local.resource_group_name
   location                 = local.location
@@ -124,7 +125,7 @@ resource "azurerm_mssql_server_extended_auditing_policy" "primary" {
   count                                   = var.enable_sql_server_extended_auditing_policy ? 1 : 0
   server_id                               = azurerm_mssql_server.primary.id
   storage_endpoint                        = var.create_storage_account == true ? azurerm_storage_account.storeacc[0].primary_blob_endpoint : var.storage_account_blob_endpoint
-  storage_account_access_key              = var.create_storage_account == true ? azurerm_storage_account.storeacc.0.primary_access_key : var.storage_account_access_key
+  storage_account_access_key              = var.create_storage_account == true ? azurerm_storage_account.storeacc[0].primary_access_key : var.storage_account_access_key
   storage_account_access_key_is_secondary = false
   enabled                                 = var.enable_extended_auditing_policy
   retention_in_days                       = var.log_retention_days
@@ -156,9 +157,9 @@ resource "azurerm_mssql_server" "secondary" {
 
 resource "azurerm_mssql_server_extended_auditing_policy" "secondary" {
   count                                   = var.enable_failover_group && var.enable_sql_server_extended_auditing_policy ? 1 : 0
-  server_id                               = azurerm_mssql_server.secondary.0.id
-  storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
-  storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
+  server_id                               = azurerm_mssql_server.secondary[0].id
+  storage_endpoint                        = azurerm_storage_account.storeacc[0].primary_blob_endpoint
+  storage_account_access_key              = azurerm_storage_account.storeacc[0].primary_access_key
   storage_account_access_key_is_secondary = false
   enabled                                 = var.enable_extended_auditing_policy
   retention_in_days                       = var.log_retention_days
@@ -195,8 +196,8 @@ resource "azurerm_mssql_database" "db" {
 resource "azurerm_mssql_database_extended_auditing_policy" "primary" {
   count                                   = var.enable_database_extended_auditing_policy ? 1 : 0
   database_id                             = azurerm_mssql_database.db.id
-  storage_endpoint                        = azurerm_storage_account.storeacc.0.primary_blob_endpoint
-  storage_account_access_key              = azurerm_storage_account.storeacc.0.primary_access_key
+  storage_endpoint                        = azurerm_storage_account.storeacc[0].primary_blob_endpoint
+  storage_account_access_key              = azurerm_storage_account.storeacc[0].primary_access_key
   storage_account_access_key_is_secondary = false
   enabled                                 = var.enable_databases_extended_auditing_policy
   retention_in_days                       = var.log_retention_days
@@ -216,28 +217,28 @@ resource "azurerm_mssql_server_security_alert_policy" "sap_primary" {
   email_addresses            = var.email_addresses_for_alerts
   retention_days             = var.threat_detection_audit_logs_retention_days
   disabled_alerts            = var.disabled_alerts
-  storage_account_access_key = azurerm_storage_account.storeacc.0.primary_access_key
-  storage_endpoint           = azurerm_storage_account.storeacc.0.primary_blob_endpoint
+  storage_account_access_key = azurerm_storage_account.storeacc[0].primary_access_key
+  storage_endpoint           = azurerm_storage_account.storeacc[0].primary_blob_endpoint
 }
 
 resource "azurerm_mssql_server_security_alert_policy" "sap_secondary" {
   count                      = var.enable_vulnerability_assessment && var.enable_failover_group ? 1 : 0
   resource_group_name        = local.resource_group_name
-  server_name                = azurerm_mssql_server.secondary.0.name
+  server_name                = azurerm_mssql_server.secondary[0].name
   state                      = "Enabled"
   email_account_admins       = true
   email_addresses            = var.email_addresses_for_alerts
   retention_days             = var.threat_detection_audit_logs_retention_days
   disabled_alerts            = var.disabled_alerts
-  storage_account_access_key = azurerm_storage_account.storeacc.0.primary_access_key
-  storage_endpoint           = azurerm_storage_account.storeacc.0.primary_blob_endpoint
+  storage_account_access_key = azurerm_storage_account.storeacc[0].primary_access_key
+  storage_endpoint           = azurerm_storage_account.storeacc[0].primary_blob_endpoint
 }
 
 resource "azurerm_mssql_server_vulnerability_assessment" "va_primary" {
   count                           = var.enable_vulnerability_assessment ? 1 : 0
-  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sap_primary.0.id
-  storage_container_path          = "${azurerm_storage_account.storeacc.0.primary_blob_endpoint}${azurerm_storage_container.storcont.0.name}/"
-  storage_account_access_key      = azurerm_storage_account.storeacc.0.primary_access_key
+  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sap_primary[0].id
+  storage_container_path          = "${azurerm_storage_account.storeacc[0].primary_blob_endpoint}${azurerm_storage_container.storcont[0].name}/"
+  storage_account_access_key      = azurerm_storage_account.storeacc[0].primary_access_key
 
   recurring_scans {
     enabled                   = true
@@ -248,9 +249,9 @@ resource "azurerm_mssql_server_vulnerability_assessment" "va_primary" {
 
 resource "azurerm_mssql_server_vulnerability_assessment" "va_secondary" {
   count                           = var.enable_vulnerability_assessment && var.enable_failover_group == true ? 1 : 0
-  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sap_secondary.0.id
-  storage_container_path          = "${azurerm_storage_account.storeacc.0.primary_blob_endpoint}${azurerm_storage_container.storcont.0.name}/"
-  storage_account_access_key      = azurerm_storage_account.storeacc.0.primary_access_key
+  server_security_alert_policy_id = azurerm_mssql_server_security_alert_policy.sap_secondary[0].id
+  storage_container_path          = "${azurerm_storage_account.storeacc[0].primary_blob_endpoint}${azurerm_storage_container.storcont[0].name}/"
+  storage_account_access_key      = azurerm_storage_account.storeacc[0].primary_access_key
 
   recurring_scans {
     enabled                   = true
@@ -303,7 +304,7 @@ resource "azurerm_mssql_failover_group" "fog" {
   server_id = azurerm_mssql_server.primary.id
 
   partner_server {
-    id = azurerm_mssql_server.secondary.0.id
+    id = azurerm_mssql_server.secondary[0].id
   }
 
   read_write_endpoint_failover_policy {
@@ -350,7 +351,7 @@ resource "azurerm_private_endpoint" "pep2" {
   private_service_connection {
     name                           = "sqldbprivatelink-secondary"
     is_manual_connection           = false
-    private_connection_resource_id = azurerm_mssql_server.secondary.0.id
+    private_connection_resource_id = azurerm_mssql_server.secondary[0].id
     subresource_names              = ["sqlServer"]
   }
 }
@@ -361,14 +362,14 @@ resource "azurerm_private_endpoint" "pep2" {
 
 data "azurerm_private_endpoint_connection" "private-ip1" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_private_endpoint.pep1.0.name
+  name                = azurerm_private_endpoint.pep1[0].name
   resource_group_name = local.resource_group_name
   depends_on          = [azurerm_mssql_server.primary]
 }
 
 data "azurerm_private_endpoint_connection" "private-ip2" {
   count               = var.enable_failover_group && var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_private_endpoint.pep2.0.name
+  name                = azurerm_private_endpoint.pep2[0].name
   resource_group_name = local.resource_group_name
   depends_on          = [azurerm_mssql_server.secondary]
 }
@@ -384,8 +385,8 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vent-link1" {
   count                 = var.enable_private_endpoint ? 1 : 0
   name                  = "vnet-private-zone-link"
   resource_group_name   = local.resource_group_name
-  private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1.0.name : var.existing_private_dns_zone
-  virtual_network_id    = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet01.0.id : var.existing_vnet_id
+  private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1[0].name : var.existing_private_dns_zone
+  virtual_network_id    = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet01[0].id : var.existing_vnet_id
   registration_enabled  = true
   tags                  = merge({ "Name" = format("%s", "vnet-private-zone-link") }, var.tags, )
 }
@@ -393,19 +394,19 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vent-link1" {
 resource "azurerm_private_dns_a_record" "arecord1" {
   count               = var.enable_private_endpoint ? 1 : 0
   name                = azurerm_mssql_server.primary.name
-  zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1.0.name : var.existing_private_dns_zone
+  zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1[0].name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
-  records             = [data.azurerm_private_endpoint_connection.private-ip1.0.private_service_connection.0.private_ip_address]
+  records             = [data.azurerm_private_endpoint_connection.private-ip1[0].private_service_connection[0].private_ip_address]
 }
 
 resource "azurerm_private_dns_a_record" "arecord2" {
   count               = var.enable_failover_group && var.enable_private_endpoint ? 1 : 0
-  name                = azurerm_mssql_server.secondary.0.name
-  zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1.0.name : var.existing_private_dns_zone
+  name                = azurerm_mssql_server.secondary[0].name
+  zone_name           = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1[0].name : var.existing_private_dns_zone
   resource_group_name = local.resource_group_name
   ttl                 = 300
-  records             = [data.azurerm_private_endpoint_connection.private-ip2.0.private_service_connection.0.private_ip_address]
+  records             = [data.azurerm_private_endpoint_connection.private-ip2[0].private_service_connection[0].private_ip_address]
 }
 
 #------------------------------------------------------------------
