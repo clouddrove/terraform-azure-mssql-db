@@ -70,18 +70,6 @@ variable "database_name" {
   type        = string
 }
 
-variable "sql_database_edition" {
-  description = "The edition of the database to be created"
-  default     = "Standard"
-  type        = string
-}
-
-variable "sqldb_service_objective_name" {
-  description = " The service objective name for the database"
-  default     = "S1"
-  type        = string
-}
-
 variable "log_retention_days" {
   description = "Specifies the number of days to keep in the Threat Detection audit logs"
   default     = "30"
@@ -110,12 +98,6 @@ variable "disabled_alerts" {
   description = "Specifies an array of alerts that are disabled. Allowed values are: Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action."
   type        = list(any)
   default     = []
-}
-
-variable "ad_admin_login_name" {
-  description = "The login name of the principal to set as the server administrator"
-  default     = null
-  type        = string
 }
 
 variable "identity" {
@@ -152,12 +134,6 @@ variable "virtual_network_name" {
   type        = string
   description = "The name of the virtual network"
   default     = ""
-}
-
-variable "private_subnet_address_prefix" {
-  description = "The name of the subnet for private endpoints"
-  default     = null
-  type        = string
 }
 
 variable "existing_vnet_id" {
@@ -216,11 +192,6 @@ variable "storage_account_id" {
   description = "The name of the storage account to store the all monitoring logs"
   default     = null
   type        = string
-}
-
-variable "extaudit_diag_logs" {
-  description = "Database Monitoring Category details for Azure Diagnostic setting"
-  default     = ["SQLSecurityAuditEvents", "SQLInsights", "AutomaticTuning", "QueryStoreRuntimeStatistics", "QueryStoreWaitStatistics", "Errors", "DatabaseWaitStatistics", "Timeouts", "Blocks", "Deadlocks"]
 }
 
 variable "tags" {
@@ -358,9 +329,9 @@ variable "max_size_gb" {
   default = 2
 }
 
-variable "sku_name" {
+variable "db_sku_name" {
   type    = string
-  default = "Basic"
+  default = null # Possible Values: GP_S_Gen5_2, HS_Gen4_1, BC_Gen5_2, ElasticPool, Basic, S0, P2, DW100c, DS100. 
 }
 
 variable "enclave_type" {

@@ -17,8 +17,7 @@ locals {
     length(azurerm_resource_group.rg) > 0 ? azurerm_resource_group.rg[0].location : null
   )
 
-  if_threat_detection_policy_enabled  = var.enable_threat_detection_policy ? [{}] : []
-  if_extended_auditing_policy_enabled = var.enable_extended_auditing_policy ? [{}] : []
+  if_threat_detection_policy_enabled = var.enable_threat_detection_policy ? [{}] : []
 }
 
 #---------------------------------------------------------
@@ -37,7 +36,7 @@ resource "azurerm_resource_group" "rg" {
   tags     = merge({ "Name" = format("%s", var.resource_group_name) }, module.labels.id)
 }
 
-data "azurerm_client_config" "current" {}
+# data "azurerm_client_config" "current" {}
 
 #---------------------------------------------------------
 # Storage Account to keep Audit logs - Default is "false"
@@ -55,8 +54,7 @@ resource "random_string" "str" {
 
 resource "azurerm_storage_account" "storeacc" {
   count = (var.enable_sql_server_extended_auditing_policy || var.enable_database_extended_auditing_policy || var.enable_vulnerability_assessment || var.enable_log_monitoring == true) && var.create_storage_account == true ? 1 : 0
-  # name  = var.storage_account_name == null ? format("stsqlauditlogs%s", element(concat(random_string.str.*.result, [""]), 0)) : substr(var.storage_account_name, 0, 24)
-  name = var.storage_account_name == null ? "stsqlauditlogs${random_string.str[0].result}" : substr(var.storage_account_name, 0, 24)
+  name  = var.storage_account_name == null ? "stsqlauditlogs${random_string.str[0].result}" : substr(var.storage_account_name, 0, 24)
 
   resource_group_name      = local.resource_group_name
   location                 = local.location
@@ -176,7 +174,7 @@ resource "azurerm_mssql_database" "db" {
   collation    = var.collation
   license_type = var.license_type
   max_size_gb  = var.max_size_gb
-  sku_name     = var.sku_name
+  sku_name     = var.db_sku_name
   enclave_type = var.enclave_type
   server_id    = azurerm_mssql_server.primary.id
   tags         = merge({ "Name" = format("%s-primary", var.database_name) }, var.tags, )

@@ -72,7 +72,7 @@ module "log-analytics" {
 }
 
 ##----------------------------------------------------------------------------- 
-## Mssql Server
+## Mssql Server database
 ##-----------------------------------------------------------------------------
 module "mssql-server" {
   depends_on = [module.resource_group, module.vnet]
@@ -86,13 +86,12 @@ module "mssql-server" {
 
   sqlserver_name                 = "mssqldbserver"
   database_name                  = "demomssqldb"
-  sql_database_edition           = "Standard"
-  sqldb_service_objective_name   = "S1"
+  db_sku_name                    = "Basic"
   sql_server_version             = "12.0"
   enable_threat_detection_policy = true
   enable_private_endpoint        = true
   virtual_network_name           = module.vnet.vnet_name
   existing_subnet_id             = module.subnet.default_subnet_id[0]
   enable_diagnostic              = false
-  log_analytics_workspace_id     = module.log-analytics.workspace_id
+  # log_analytics_workspace_id     = module.log-analytics.workspace_id (Use it when enable_diagnostic = true)
 }
