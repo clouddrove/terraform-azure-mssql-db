@@ -300,4 +300,3 @@ variable "enable_databases_extended_auditing_policy" {
   default     = true
   description = "Whether to enable the extended auditing policy. Possible values are true and false. Defaults to true."
 }
-
