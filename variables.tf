@@ -118,6 +118,11 @@ variable "enable_failover_group" {
   type        = bool
 }
 
+variable "enable_readonly_failover_policy" {
+  default = true
+  type    = bool
+}
+
 variable "secondary_sql_server_location" {
   description = "Specifies the supported Azure location to create secondary sql server resource"
   default     = "northeurope"

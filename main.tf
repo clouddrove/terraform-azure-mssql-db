@@ -295,11 +295,12 @@ resource "azurerm_mssql_firewall_rule" "fw02" {
 #---------------------------------------------------------
 
 resource "azurerm_mssql_failover_group" "fog" {
-  count     = var.enable_failover_group ? 1 : 0
-  name      = "sqldb-failover-group"
-  databases = [azurerm_mssql_database.db.id]
-  tags      = merge({ "Name" = format("%s", "sqldb-failover-group") }, var.tags, )
-  server_id = azurerm_mssql_server.primary.id
+  count                                     = var.enable_failover_group ? 1 : 0
+  name                                      = "sqldb-failover-group"
+  databases                                 = [azurerm_mssql_database.db.id]
+  tags                                      = merge({ "Name" = format("%s", "sqldb-failover-group") }, var.tags, )
+  server_id                                 = azurerm_mssql_server.primary.id
+  readonly_endpoint_failover_policy_enabled = var.enable_readonly_failover_policy
 
   partner_server {
     id = azurerm_mssql_server.secondary[0].id
@@ -310,6 +311,7 @@ resource "azurerm_mssql_failover_group" "fog" {
     grace_minutes = 60
   }
 }
+
 
 #---------------------------------------------------------
 # Private Link for SQL Server - Default is "false"
