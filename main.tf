@@ -36,7 +36,7 @@ resource "azurerm_resource_group" "rg" {
   tags     = merge({ "Name" = format("%s", var.resource_group_name) }, module.labels.id)
 }
 
-# data "azurerm_client_config" "current" {}
+data "azurerm_client_config" "current" {}
 
 #---------------------------------------------------------
 # Storage Account to keep Audit logs - Default is "false"
@@ -279,7 +279,6 @@ resource "azurerm_mssql_firewall_rule" "fw01" {
   start_ip_address = element(var.firewall_rules, count.index).start_ip_address
   end_ip_address   = element(var.firewall_rules, count.index).end_ip_address
   server_id        = azurerm_mssql_server.primary.id
-
 }
 
 resource "azurerm_mssql_firewall_rule" "fw02" {

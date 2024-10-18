@@ -1,14 +1,14 @@
 provider "azurerm" {
   features {}
-  subscription_id = "000000-11111-1223-XXX-XXXXXXXXXXXX"
+  # subscription_id = "000000-11111-1223-XXX-XXXXXXXXXXXX"
+  subscription_id = "068245d4-3c94-42fe-9c4d-9e5e1cabc60c"
 }
 ##----------------------------------------------------------------------------- 
 ## Resource Group
 ##-----------------------------------------------------------------------------
 module "resource_group" {
-  source  = "clouddrove/resource-group/azure"
-  version = "1.0.2"
-
+  source      = "clouddrove/resource-group/azure"
+  version     = "1.0.2"
   name        = "app"
   environment = "test"
   label_order = ["name", "environment"]
@@ -75,9 +75,8 @@ module "log-analytics" {
 ## Mssql Server database
 ##-----------------------------------------------------------------------------
 module "mssql-server" {
-  depends_on = [module.resource_group, module.vnet]
-  source     = "../.."
-
+  depends_on            = [module.resource_group, module.vnet]
+  source                = "../.."
   name                  = "app"
   environment           = "test"
   create_resource_group = false
