@@ -36,8 +36,6 @@ resource "azurerm_resource_group" "rg" {
   tags     = merge({ "Name" = format("%s", var.resource_group_name) }, module.labels.id)
 }
 
-data "azurerm_client_config" "current" {}
-
 #---------------------------------------------------------
 # Storage Account to keep Audit logs - Default is "false"
 #----------------------------------------------------------
