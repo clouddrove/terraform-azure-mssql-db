@@ -1,17 +1,22 @@
 provider "azurerm" {
   features {}
+  subscription_id = "000000-11111-1223-XXX-XXXXXXXXXXXX"
 }
-
+##----------------------------------------------------------------------------- 
+## Resource Group
+##-----------------------------------------------------------------------------
 module "resource_group" {
-  source  = "clouddrove/resource-group/azure"
-  version = "1.0.2"
-
+  source      = "clouddrove/resource-group/azure"
+  version     = "1.0.2"
   name        = "app"
   environment = "test"
   label_order = ["name", "environment"]
   location    = "Canada Central"
 }
 
+##----------------------------------------------------------------------------- 
+## Vnet
+##-----------------------------------------------------------------------------
 module "vnet" {
   source              = "clouddrove/vnet/azure"
   version             = "1.0.4"
@@ -22,9 +27,12 @@ module "vnet" {
   address_spaces      = ["10.0.0.0/16"]
 }
 
+##----------------------------------------------------------------------------- 
+## Subnet 
+##-----------------------------------------------------------------------------
 module "subnet" {
   source               = "clouddrove/subnet/azure"
-  version              = "1.1.0"
+  version              = "1.2.1"
   name                 = "app"
   environment          = "test"
   resource_group_name  = module.resource_group.resource_group_name
@@ -46,11 +54,28 @@ module "subnet" {
   ]
 }
 
+##----------------------------------------------------------------------------- 
+## Log Analytics
+##-----------------------------------------------------------------------------
+module "log-analytics" {
+  source                           = "clouddrove/log-analytics/azure"
+  version                          = "1.1.0"
+  name                             = "app"
+  environment                      = "test"
+  label_order                      = ["name", "environment"]
+  create_log_analytics_workspace   = true
+  log_analytics_workspace_sku      = "PerGB2018"
+  resource_group_name              = module.resource_group.resource_group_name
+  log_analytics_workspace_location = module.resource_group.resource_group_location
+  log_analytics_workspace_id       = module.log-analytics.workspace_id
+}
 
+##----------------------------------------------------------------------------- 
+## Mssql Server database
+##-----------------------------------------------------------------------------
 module "mssql-server" {
-  depends_on = [module.resource_group, module.vnet]
-  source     = "clouddrove/mssql-db/azure"
-
+  depends_on            = [module.resource_group, module.vnet]
+  source                = "../.."
   name                  = "app"
   environment           = "test"
   create_resource_group = false
@@ -59,11 +84,12 @@ module "mssql-server" {
 
   sqlserver_name                 = "mssqldbserver"
   database_name                  = "demomssqldb"
-  sql_database_edition           = "Standard"
-  sqldb_service_objective_name   = "S1"
+  db_sku_name                    = "Basic"
   sql_server_version             = "12.0"
   enable_threat_detection_policy = true
   enable_private_endpoint        = true
   virtual_network_name           = module.vnet.vnet_name
   existing_subnet_id             = module.subnet.default_subnet_id[0]
+  enable_diagnostic              = false
+  # log_analytics_workspace_id     = module.log-analytics.workspace_id (Use it when enable_diagnostic = true)
 }
