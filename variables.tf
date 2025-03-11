@@ -343,3 +343,16 @@ variable "enclave_type" {
   type    = string
   default = "VBS"
 }
+
+variable "endpoint_name" {
+  type        = string
+  default     = ""
+  description = "Custom Name for the Private Endpoint"
+}
+
+variable "vnet_link_name" {
+  type        = string
+  default     = ""
+  description = "Custom Name for the Private Endpoint"
+
+}
