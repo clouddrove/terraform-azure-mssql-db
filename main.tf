@@ -323,7 +323,7 @@ data "azurerm_virtual_network" "vnet01" {
 
 resource "azurerm_private_endpoint" "pep1" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = "sqldb-private-endpoint"
+  name                = format("%s", "sqldb-private-endpoint")
   location            = local.location
   resource_group_name = local.resource_group_name
   subnet_id           = var.existing_subnet_id
