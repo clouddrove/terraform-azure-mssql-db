@@ -25,6 +25,7 @@
 | enable\_vulnerability\_assessment | Manages the Vulnerability Assessment for a MS SQL Server | `bool` | `false` | no |
 | enabled | Set to false to prevent the module from creating any resources. | `bool` | `true` | no |
 | enclave\_type | n/a | `string` | `"VBS"` | no |
+| endpoint\_name | Custom Name for the Private Endpoint | `string` | `""` | no |
 | environment | Project environment | `string` | `""` | no |
 | eventhub\_authorization\_rule\_id | Eventhub authorization rule id to pass it to destination details of diagnosys setting of NSG. | `string` | `null` | no |
 | eventhub\_name | Eventhub Name to pass it to destination details of diagnosys setting of NSG. | `string` | `null` | no |
@@ -60,6 +61,7 @@
 | tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
 | threat\_detection\_audit\_logs\_retention\_days | Specifies the number of days to keep in the Threat Detection audit logs. | `number` | `0` | no |
 | virtual\_network\_name | The name of the virtual network | `string` | `""` | no |
+| vnet\_link\_name | Custom Name for the Private Endpoint | `string` | `""` | no |
 
 ## Outputs
 
