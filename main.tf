@@ -323,7 +323,7 @@ data "azurerm_virtual_network" "vnet01" {
 
 resource "azurerm_private_endpoint" "pep1" {
   count               = var.enable_private_endpoint ? 1 : 0
-  name                = "sqldb-private-endpoint"
+  name                = var.endpoint_name == "" ? format("%s", "sqldb-private-endpoint") : var.endpoint_name
   location            = local.location
   resource_group_name = local.resource_group_name
   subnet_id           = var.existing_subnet_id
@@ -380,7 +380,7 @@ resource "azurerm_private_dns_zone" "dnszone1" {
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vent-link1" {
   count                 = var.enable_private_endpoint ? 1 : 0
-  name                  = "vnet-private-zone-link"
+  name                  = var.vnet_link_name == "" ? "vnet-private-zone-link" : var.vnet_link_name
   resource_group_name   = local.resource_group_name
   private_dns_zone_name = var.existing_private_dns_zone == null ? azurerm_private_dns_zone.dnszone1[0].name : var.existing_private_dns_zone
   virtual_network_id    = var.existing_vnet_id == null ? data.azurerm_virtual_network.vnet01[0].id : var.existing_vnet_id
